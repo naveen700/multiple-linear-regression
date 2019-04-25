@@ -21,7 +21,7 @@ X = onehotencoder.fit_transform(X).toarray()
 X = X[:, 1:]
 
 # Splitting the dataset into the Training set and Test set
-from sklearn.cross_validation import train_test_split
+from sklearn.model_selection import train_test_split
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = 0.2, random_state = 0)
 
 # Feature Scaling
@@ -32,10 +32,45 @@ X_test = sc_X.transform(X_test)
 sc_y = StandardScaler()
 y_train = sc_y.fit_transform(y_train)"""
 
-# Fitting Multiple Linear Regression to the Training set
 from sklearn.linear_model import LinearRegression
 regressor = LinearRegression()
-regressor.fit(X_train, y_train)
+regressor.fit(X_train,y_train)
 
-# Predicting the Test set results
+# predicting the test set result
 y_pred = regressor.predict(X_test)
+
+# building the optimal model using backward elimination.
+import statsmodels.formula.api as sm
+# intercept :- this is b0  , regression line cuts y axis when x-0 is the intercept point 
+# some libraries does not include interceptor in it.so we have to add the interceptor .
+X = np.append(arr= np.ones((50,1)).astype(int), values= X, axis=1)
+
+# x_opt will contain the highly statistically important variable
+#  OLS is simple ordinary least square method.
+# ols finds the better fit model by finding the minimum of sum of all square of distance btw real data point  and predicted from linear regression line.    
+# minimum the distance is better fit modeil is.
+X_opt = X[:, [0,1,2,3,4,5]]
+regressor_OLS = sm.OLS(endog=y, exog=X_opt).fit()
+# we can check for p value from this function summary.
+regressor_OLS.summary()
+
+# In our first summary we see that dummy variables of the categorical variable state are having very high p value much above than significance level.
+
+X_opt = X[:, [0,1,3,4,5]]
+regressor_OLS = sm.OLS(endog=y, exog=X_opt).fit()
+regressor_OLS.summary()
+
+X_opt = X[:, [0,3,4,5]]
+regressor_OLS = sm.OLS(endog=y, exog=X_opt).fit()
+regressor_OLS.summary()
+
+
+X_opt = X[:, [0,3,5]]
+regressor_OLS = sm.OLS(endog=y, exog=X_opt).fit()
+regressor_OLS.summary()
+
+X_opt = X[:, [0,3]]
+regressor_OLS = sm.OLS(endog=y, exog=X_opt).fit()
+regressor_OLS.summary()
+
+
